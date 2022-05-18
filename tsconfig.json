@@ -1,0 +1,25 @@
+{
+  "compileOnSave": true,
+  "compilerOptions": {
+    "sourceMap": false,
+    "incremental": true,
+    "outDir": "./dist",
+    "module": "CommonJS",
+    "declaration": false,
+    "skipLibCheck": true,
+    "esModuleInterop": true,
+    "resolveJsonModule": true,
+    "moduleResolution": "node",
+    "experimentalDecorators": true,
+    "emitDecoratorMetadata": true,
+    "allowSyntheticDefaultImports": true,
+    "target": "ES5",
+    "typeRoots": ["@types","node_modules/@types"],
+    "lib": ["es2016", "dom"],
+    
+  },
+  "include": ["src/**/*.ts", "src/database/index.ts" ],
+  "exclude": ["node_modules", "coverage", "src/**/*.spec.ts"],
+  
+  
+}

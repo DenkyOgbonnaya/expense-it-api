@@ -7,6 +7,10 @@ const UserSchema: Schema = new Schema<IUser>(
       type: String,
       required: true,
     },
+    lastLogin: {
+      type: Date,
+      default: Date.now()
+    }
   },
   {
     timestamps: true,

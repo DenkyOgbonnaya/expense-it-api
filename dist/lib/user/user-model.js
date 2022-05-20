@@ -29,6 +29,10 @@ var UserSchema = new mongoose_1.Schema({
         type: String,
         required: true,
     },
+    lastLogin: {
+        type: Date,
+        default: Date.now()
+    }
 }, {
     timestamps: true,
 });

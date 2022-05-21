@@ -45,7 +45,7 @@ var ExpenseSchema = new mongoose_1.Schema({
         ref: "Category",
     },
     user: {
-        type: mongoose_1.Schema.Types.ObjectId,
+        type: String,
         ref: "User",
         required: true,
     },

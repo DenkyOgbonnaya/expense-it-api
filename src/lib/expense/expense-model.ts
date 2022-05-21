@@ -23,7 +23,7 @@ const ExpenseSchema = new Schema<IExpense>(
       ref: "Category",
     },
     user: {
-      type: Schema.Types.ObjectId,
+      type: String,
       ref: "User",
       required: true,
     },

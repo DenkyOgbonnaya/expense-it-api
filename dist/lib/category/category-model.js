@@ -23,10 +23,13 @@ var __importStar = (this && this.__importStar) || function (mod) {
     return result;
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.Category = void 0;
 var mongoose_1 = __importStar(require("mongoose"));
 var CategorySchema = new mongoose_1.Schema({
     name: {
+        type: "string",
+        required: true,
+    },
+    user: {
         type: "string",
         required: true,
     },
@@ -36,4 +39,5 @@ var CategorySchema = new mongoose_1.Schema({
 }, {
     timestamps: true,
 });
-exports.Category = mongoose_1.default.model("Category", CategorySchema);
+var Category = mongoose_1.default.model("Category", CategorySchema);
+exports.default = Category;

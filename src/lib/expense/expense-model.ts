@@ -19,8 +19,7 @@ const ExpenseSchema = new Schema<IExpense>(
       default: Date.now(),
     },
     category: {
-      type: Schema.Types.ObjectId,
-      ref: "Category",
+      type: String
     },
     user: {
       type: String,

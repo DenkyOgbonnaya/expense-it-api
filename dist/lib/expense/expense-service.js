@@ -69,7 +69,7 @@ var ExpenseService = /** @class */ (function () {
     };
     ExpenseService.prototype.getExpensesByDate = function (userId, startDate, endDate, page, limit) {
         return __awaiter(this, void 0, void 0, function () {
-            var offset, fromDate, toDate;
+            var offset, fromDate, toDate, res;
             return __generator(this, function (_a) {
                 switch (_a.label) {
                     case 0:
@@ -78,25 +78,25 @@ var ExpenseService = /** @class */ (function () {
                         toDate = new Date(endDate);
                         return [4 /*yield*/, expense_model_1.default.aggregate([
                                 {
-                                    $match: { user: userId },
-                                },
-                                {
-                                    $match: { date: { $gte: fromDate, $lte: toDate } },
-                                },
-                                {
-                                    $group: { _id: "date" },
+                                    $match: { user: userId, date: { $gte: fromDate, $lte: toDate } },
                                 },
                                 {
                                     $sort: { date: -1 },
                                 },
-                            ])
-                                .skip(offset)
-                                .limit(limit)
-                            //   .sort({ createdDate: -1 });
-                        ];
-                    case 1: return [2 /*return*/, _a.sent()
-                        //   .sort({ createdDate: -1 });
-                    ];
+                                {
+                                    $group: {
+                                        _id: "$date",
+                                        expenses: {
+                                            $push: "$$ROOT",
+                                        },
+                                    },
+                                },
+                            ])];
+                    case 1:
+                        res = _a.sent();
+                        //   .skip(offset)
+                        //   .limit(limit);
+                        return [2 /*return*/, res];
                 }
             });
         });
@@ -111,15 +111,17 @@ var ExpenseService = /** @class */ (function () {
                         fromDate = new Date(startDate);
                         toDate = new Date(endDate);
                         return [4 /*yield*/, expense_model_1.default.aggregate([
-                                { $match: { user: userId } },
-                                { $match: { amount: { $gte: 10 } } },
-                                { $match: { date: { $gte: fromDate, $lte: toDate } } },
-                                { $group: { _id: "$Category.name", total: { $sum: "$amount" } } },
+                                {
+                                    $match: {
+                                        user: userId,
+                                        amount: { $gte: 10 },
+                                        date: { $gte: fromDate, $lte: toDate },
+                                    },
+                                },
                                 { $sort: { total: -1 } },
+                                { $group: { _id: "$category", total: { $sum: "$amount" } } },
                             ])];
-                    case 1:
-                        _a.sent();
-                        return [2 /*return*/];
+                    case 1: return [2 /*return*/, _a.sent()];
                 }
             });
         });
@@ -135,8 +137,26 @@ var ExpenseService = /** @class */ (function () {
                         ])];
                     case 1:
                         res = _a.sent();
-                        console.log(res, "AMOUNT");
-                        return [2 /*return*/, 0];
+                        return [2 /*return*/, res[0].total];
+                }
+            });
+        });
+    };
+    ExpenseService.prototype.getTotalExpensesByDate = function (userId, startDate, endDate) {
+        return __awaiter(this, void 0, void 0, function () {
+            var fromDate, toDate, res;
+            return __generator(this, function (_a) {
+                switch (_a.label) {
+                    case 0:
+                        fromDate = new Date(startDate);
+                        toDate = new Date(endDate);
+                        return [4 /*yield*/, expense_model_1.default.aggregate([
+                                { $match: { user: userId, date: { $gte: fromDate, $lte: toDate } } },
+                                { $group: { _id: null, total: { $sum: "$amount" } } },
+                            ])];
+                    case 1:
+                        res = _a.sent();
+                        return [2 /*return*/, res[0].total];
                 }
             });
         });
@@ -170,11 +190,11 @@ var ExpenseService = /** @class */ (function () {
             });
         });
     };
-    ExpenseService.prototype.getExpense = function (userId, expenseId) {
+    ExpenseService.prototype.getExpense = function (expenseId, userId) {
         return __awaiter(this, void 0, void 0, function () {
             return __generator(this, function (_a) {
                 switch (_a.label) {
-                    case 0: return [4 /*yield*/, expense_model_1.default.findOne({ user: userId, id: expenseId })];
+                    case 0: return [4 /*yield*/, expense_model_1.default.findOne({ id: expenseId, user: userId })];
                     case 1: return [2 /*return*/, _a.sent()];
                 }
             });

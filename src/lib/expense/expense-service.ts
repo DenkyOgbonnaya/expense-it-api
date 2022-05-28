@@ -1,4 +1,4 @@
-import { IExpense, IExpenseService } from "./expense-interface";
+import { IExpense, IExpenseGetRes, IExpenseService } from "./expense-interface";
 import Expense from "./expense-model";
 import ExpenseServiceFactory from "./expense-service-factory";
 
@@ -32,23 +32,26 @@ export class ExpenseService implements IExpenseService {
     const fromDate = new Date(startDate);
     const toDate = new Date(endDate);
 
-    return await Expense.aggregate([
+    const res = await Expense.aggregate([
       {
-        $match: { user: userId },
+        $match: { user: userId, date: { $gte: fromDate, $lte: toDate } },
       },
-      {
-        $match: { date: { $gte: fromDate, $lte: toDate } },
-      },
-      {
-        $group: { _id: "date" },
-      },
+
       {
         $sort: { date: -1 },
       },
-    ])
-      .skip(offset)
-      .limit(limit)
-    //   .sort({ createdDate: -1 });
+      {
+        $group: {
+          _id: "$date",
+          expenses: {
+            $push: "$$ROOT",
+          },
+        },
+      },
+    ]);
+    //   .skip(offset)
+    //   .limit(limit);
+    return res;
   }
   async getExpenseCategories(
     userId: string,
@@ -56,16 +59,22 @@ export class ExpenseService implements IExpenseService {
     endDate: string,
     page: number,
     limit: number
-  ): Promise<void> {
+  ): Promise<any> {
     const offset = page + limit - limit;
     const fromDate = new Date(startDate);
     const toDate = new Date(endDate);
-    await Expense.aggregate([
-      { $match: { user: userId } },
-      { $match: { amount: { $gte: 10 } } },
-      { $match: { date: { $gte: fromDate, $lte: toDate } } },
-      { $group: { _id: "$Category.name", total: { $sum: "$amount" } } },
+
+    return await Expense.aggregate([
+      {
+        $match: {
+          user: userId,
+          amount: { $gte: 10 },
+          date: { $gte: fromDate, $lte: toDate },
+        },
+      },
+
       { $sort: { total: -1 } },
+      { $group: { _id: "$category", total: { $sum: "$amount" } } },
     ]);
   }
   async getTotalExpenses(userId: string): Promise<number> {
@@ -73,8 +82,20 @@ export class ExpenseService implements IExpenseService {
       { $match: { user: userId } },
       { $group: { _id: null, total: { $sum: "$amount" } } },
     ]);
-    console.log(res, "AMOUNT");
-    return 0;
+    return res[0].total;
+  }
+  async getTotalExpensesByDate(
+    userId: string,
+    startDate: string,
+    endDate: string
+  ): Promise<number> {
+    const fromDate = new Date(startDate);
+    const toDate = new Date(endDate);
+    const res = await Expense.aggregate([
+      { $match: { user: userId, date: { $gte: fromDate, $lte: toDate } } },
+      { $group: { _id: null, total: { $sum: "$amount" } } },
+    ]);
+    return res[0].total;
   }
   async createExpense(expense: IExpense): Promise<IExpense> {
     const res = (await Expense.create(expense)) as IExpense;
@@ -93,8 +114,8 @@ export class ExpenseService implements IExpenseService {
       .limit(limit)
       .sort({ createdDate: -1 });
   }
-  async getExpense(userId: string, expenseId): Promise<IExpense> {
-    return await Expense.findOne({ user: userId, id: expenseId });
+  async getExpense(expenseId: string, userId): Promise<IExpense> {
+    return await Expense.findOne({ id: expenseId, user: userId });
   }
   async getUserExpensesCount(
     userId: string,

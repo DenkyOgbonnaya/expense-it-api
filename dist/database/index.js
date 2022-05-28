@@ -7,7 +7,6 @@ var dotenv_1 = __importDefault(require("dotenv"));
 var mongoose_1 = __importDefault(require("mongoose"));
 dotenv_1.default.config();
 var mongoString = process.env.DATABASE_URL;
-console.log(mongoString);
 //connect to mongo db
 mongoose_1.default.connect(mongoString, function (err) {
     if (err) {

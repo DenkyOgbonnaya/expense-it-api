@@ -3,9 +3,13 @@ export interface IExpense {
   title: string;
   date: Date | number;
   amount: number;
-  category?: Schema.Types.ObjectId;
+  category?: string;
   user: string;
   isDeleted: boolean;
+}
+export interface IExpenseGetRes {
+  _id: string;
+  expenses: [IExpense];
 }
 
 export interface IExpenseService {
@@ -30,7 +34,7 @@ export interface IExpenseService {
    * @param id expense id
    * @param userId user id
    * @param expense the expense
-   * @route PUT: api/v1/expenses/:id
+   * @route PUT: api/v1/expenses/:id/users/:id
    * @returns promise:IExpense
    */
   editExpense(
@@ -99,6 +103,13 @@ export interface IExpenseService {
    * @route GET: api/v1/expenses/users/:id/total
    */
   getTotalExpenses(userId: string): Promise<number>;
+
+   /**
+   * Get total expenses amount
+   * @param userId user id
+   * @route GET: api/v1/expenses/users/:id/date-total
+   */
+    getTotalExpensesByDate(userId: string, startDate:string, endDate:string): Promise<number>;
   getUserExpensesCount(
     userId: string,
     startDate: string,

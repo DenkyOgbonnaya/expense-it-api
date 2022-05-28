@@ -7,6 +7,10 @@ const CategorySchema = new Schema<ICategory>(
       type: "string",
       required: true,
     },
+    user: {
+      type: "string",
+      required: true,
+    },
     description: {
       type: "string",
     },
@@ -16,4 +20,5 @@ const CategorySchema = new Schema<ICategory>(
   }
 );
 
-export const Category = mongoose.model<ICategory>("Category", CategorySchema);
+const Category = mongoose.model<ICategory>("Category", CategorySchema);
+export default Category

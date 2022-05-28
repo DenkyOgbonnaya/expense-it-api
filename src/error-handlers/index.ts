@@ -13,8 +13,7 @@ function logErrorMiddleware(
   res: Response,
   next: NextFunction
 ) {
-  // logError(err);
-  console.log("Loggging error");
+  logError(err);
   next(err);
 }
 

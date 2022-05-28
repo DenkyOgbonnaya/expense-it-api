@@ -12,8 +12,7 @@ function logError(err) {
 }
 exports.logError = logError;
 function logErrorMiddleware(err, req, res, next) {
-    // logError(err);
-    console.log("Loggging error");
+    logError(err);
     next(err);
 }
 exports.logErrorMiddleware = logErrorMiddleware;
